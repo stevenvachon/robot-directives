@@ -1,0 +1,50 @@
+{
+  "name": "robot-directives",
+  "description": "Parse robot directives within HTML meta and/or HTTP headers.",
+  "version": "0.0.1",
+  "license": "MIT",
+  "homepage": "https://github.com/stevenvachon/robot-directives",
+  "author": {
+    "name": "Steven Vachon",
+    "email": "contact@svachon.com",
+    "url": "http://www.svachon.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/stevenvachon/robot-directives.git"
+  },
+  "bugs": {
+    "url": "https://github.com/stevenvachon/robot-directives/issues"
+  },
+  "dependencies": {
+    "is-bot": "~0.0.1",
+    "is-string": "^1.0.4"
+  },
+  "devDependencies": {
+    "chai": "^3.4.1",
+    "mocha": "^2.3.4",
+    "object.assign": "^4.0.3"
+  },
+  "engines": {
+    "node": ">= 0.10"
+  },
+  "scripts": {
+    "test": "mocha test.js --reporter spec --check-leaks --bail"
+  },
+  "files": [
+    "index.js",
+    "license"
+  ],
+  "keywords": [
+    "cascade",
+    "header",
+    "html",
+    "http",
+    "meta",
+    "metadata",
+    "nofollow",
+    "noindex",
+    "parse",
+    "robots"
+  ]
+}

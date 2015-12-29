@@ -1,83 +1,151 @@
 "use strict";
-var parseDirectives = require("./");
+var RobotDirectives = require("./lib");
 
 var expect = require("chai").expect;
 require("object.assign").shim();
 
 var allIsWritable = { allIsReadonly:false, restrictive:false };
+var googlebot     = { userAgent:"Googlebot/2.1" };
 var unrestrictive = { restrictive:false };
 
+// For use with `is()`
+var all         = ["all",  "archive",  "cache",  "follow",  "imageindex",  "index",         "odp",  "snippet",  "translate"];
+var followIndex = [      "noarchive","nocache",  "follow","noimageindex",  "index",       "noodp","nosnippet","notranslate"];
+var index       = [      "noarchive","nocache","nofollow","noimageindex",  "index",       "noodp","nosnippet","notranslate"];
+var noindex     = [      "noarchive","nocache",  "follow","noimageindex","noindex",       "noodp","nosnippet","notranslate"];
+var none        = [      "noarchive","nocache","nofollow","noimageindex","noindex","none","noodp","nosnippet","notranslate"];
+
+// For use with `isNot()`
+var noindex_inv = ["all",  "archive",  "cache","nofollow",  "imageindex",  "index","none",  "odp",  "snippet",  "translate"];
+
+var futureTime = function(){ return new Date("jan 1 3001").getTime() };
 
 
-function results(overrides)
+
+it('should be "all" by default', function()
 {
-	return Object.assign({},
-	{
-		all:               false,
-		noarchive:         false,
-		nocache:           false,
-		nofollow:          false,
-		noimageindex:      false,
-		noindex:           false,
-		none:              false,
-		noodp:             false,
-		nosnippet:         false,
-		notranslate:       false,
-		unavailable_after: Infinity
-	},
-	overrides);
-}
-
-
-
-it("should parse", function()
-{
-	expect( parseDirectives("") ).to.deep.equal( results({ all:true }) );
-	
-	expect( parseDirectives("nofollow")         ).to.deep.equal( results({ nofollow:true                                                        }) );
-	expect( parseDirectives("noindex")          ).to.deep.equal( results({ noarchive:true, nocache:true, noindex:true                           }) );
-	expect( parseDirectives("nofollow,noindex") ).to.deep.equal( results({ noarchive:true, nocache:true, nofollow:true, noindex:true, none:true }) );
-	expect( parseDirectives("noindex,nofollow") ).to.deep.equal( results({ noarchive:true, nocache:true, nofollow:true, noindex:true, none:true }) );
-	expect( parseDirectives("none")             ).to.deep.equal( results({ noarchive:true, nocache:true, nofollow:true, noindex:true, none:true }) );
-	
-	expect( parseDirectives("nofollow,follow,noindex")                      ).to.deep.equal( results({ noarchive:true, nocache:true, nofollow:true, noindex:true, none:true }) );
-	expect( parseDirectives("nofollow,follow,noindex",       unrestrictive) ).to.deep.equal( results({ noarchive:true, nocache:true, noindex:true                           }) );
-	expect( parseDirectives("nofollow,noindex,index")                       ).to.deep.equal( results({ noarchive:true, nocache:true, nofollow:true, noindex:true, none:true }) );
-	expect( parseDirectives("nofollow,noindex,index",        unrestrictive) ).to.deep.equal( results({ nofollow:true                                                        }) );
-	expect( parseDirectives("nofollow,follow,noindex,index")                ).to.deep.equal( results({ noarchive:true, nocache:true, nofollow:true, noindex:true, none:true }) );
-	expect( parseDirectives("nofollow,follow,noindex,index", unrestrictive) ).to.deep.equal( results({ all:true                                                             }) );
-	expect( parseDirectives("none,index")                                   ).to.deep.equal( results({ noarchive:true, nocache:true, nofollow:true, noindex:true, none:true }) );
-	expect( parseDirectives("none,index",                    unrestrictive) ).to.deep.equal( results({ nofollow:true                                                        }) );
-	
-	expect( parseDirectives("nofollow,noindex,all")                ).to.deep.equal( results({ noarchive:true, nocache:true, nofollow:true, noindex:true, none:true }) );
-	expect( parseDirectives("nofollow,noindex,all", allIsWritable) ).to.deep.equal( results({ all:true }) );
-	
-	//expect( parseDirectives("googlebot: nofollow,noindex") ).to.deep.equal( results({ noarchive:true, nocache:true, nofollow:true, noindex:true, none:true }) );
-	
-	expect( parseDirectives("unavailable_after: 1-Jan-2000 00:00:00 EST") ).to.deep.equal( results({ all:true, unavailable_after:946702800000 }) );
-	
-	expect( parseDirectives("nofollow,noindex,none")      ).to.deep.equal( results({ noarchive:true, nocache:true, nofollow:true, noindex:true, none:true }) );
-	expect( parseDirectives(" nofollow,  noindex ,none ") ).to.deep.equal( results({ noarchive:true, nocache:true, nofollow:true, noindex:true, none:true }) );
-	
-	expect( parseDirectives("unknown-directive") ).to.deep.equal( results({ all:true, "unknown-directive":true }) );
+	expect( new RobotDirectives().is("all") ).to.be.true;
 });
 
 
 
-it("should cascade", function()
+it(".meta()", function()
 {
-	var cascaded,initial;
+	expect( new RobotDirectives().meta("robots","").is("all") ).to.be.true;
 	
-	initial  = parseDirectives("nofollow");
-	cascaded = parseDirectives( Object.assign({},initial), "noindex");
+	expect( new RobotDirectives().meta("robots","nofollow").is("nofollow" ) ).to.be.true;
+	expect( new RobotDirectives().meta("robots","noindex" ).is("noarchive") ).to.be.true;
+	expect( new RobotDirectives().meta("robots","noindex" ).is("nocache"  ) ).to.be.true;
+	expect( new RobotDirectives().meta("robots","noindex" ).is("noindex"  ) ).to.be.true;
+	expect( new RobotDirectives().meta("robots","noindex" ).is(noindex    ) ).to.be.true;
+	expect( new RobotDirectives().meta("robots","noindex" ).isNot("index"    ) ).to.be.true;
+	expect( new RobotDirectives().meta("robots","noindex" ).isNot(noindex_inv) ).to.be.true;
 	
-	expect( initial  ).to.deep.equal( results({ nofollow:true                                                        }) );
-	expect( cascaded ).to.deep.equal( results({ noarchive:true, nocache:true, nofollow:true, noindex:true, none:true }) );
+	expect( new RobotDirectives().meta("robots","nofollow,noindex").is(none) ).to.be.true;
+	expect( new RobotDirectives().meta("robots","noindex,nofollow").is(none) ).to.be.true;
+	expect( new RobotDirectives().meta("robots","none"            ).is(none) ).to.be.true;
 	
+	expect( new RobotDirectives(             ).meta("robots","nofollow,follow,noindex"      ).is(none       ) ).to.be.true;
+	expect( new RobotDirectives(unrestrictive).meta("robots","nofollow,follow,noindex"      ).is(noindex    ) ).to.be.true;
+	expect( new RobotDirectives(             ).meta("robots","nofollow,noindex,index"       ).is(none       ) ).to.be.true;
+	expect( new RobotDirectives(unrestrictive).meta("robots","nofollow,noindex,index"       ).is(index      ) ).to.be.true;
+	expect( new RobotDirectives(             ).meta("robots","nofollow,follow,noindex,index").is(none       ) ).to.be.true;
+	expect( new RobotDirectives(unrestrictive).meta("robots","nofollow,follow,noindex,index").is(followIndex) ).to.be.true;
+	expect( new RobotDirectives(             ).meta("robots","none,index"                   ).is(none       ) ).to.be.true;
+	expect( new RobotDirectives(unrestrictive).meta("robots","none,index"                   ).is(index      ) ).to.be.true;
 	
-	initial  = parseDirectives("nofollow,noindex");
-	cascaded = parseDirectives( Object.assign({},initial), "follow", unrestrictive);
+	expect( new RobotDirectives(             ).meta("robots","nofollow,noindex,all").is(none) ).to.be.true;
+	expect( new RobotDirectives(allIsWritable).meta("robots","nofollow,noindex,all").is(all ) ).to.be.true;
 	
-	expect( initial  ).to.deep.equal( results({ noarchive:true, nocache:true, nofollow:true, noindex:true, none:true }) );
-	expect( cascaded ).to.deep.equal( results({ noarchive:true, nocache:true, noindex:true                           }) );
+	expect( new RobotDirectives(         ).meta("googlebot","nofollow,noindex").is(none) ).to.be.false;
+	expect( new RobotDirectives(googlebot).meta("googlebot","nofollow,noindex").is(none) ).to.be.true;
+	expect( new RobotDirectives(googlebot).meta("robots",   "nofollow,noindex").is(none) ).to.be.true;
+	
+	expect( new RobotDirectives().meta("robots","unavailable_after: 1-Jan-2000 00:00:00 EST").is(noindex                          ) ).to.be.true;
+	expect( new RobotDirectives().meta("robots","unavailable_after: 1-Jan-3000 00:00:00 EST").is(noindex, {currentTime:futureTime}) ).to.be.true;
+	
+	expect( new RobotDirectives().meta("robots","googlebot: nofollow,noindex"                          ).is(none   ) ).to.be.false;
+	expect( new RobotDirectives().meta("robots","googlebot: unavailable_after: 1-Jan-2000 00:00:00 EST").is(noindex) ).to.be.false;
+	
+	expect( new RobotDirectives().meta("robots","nofollow,noindex,none"     ).is(none) ).to.be.true;
+	expect( new RobotDirectives().meta("robots"," nofollow,  noindex ,none ").is(none) ).to.be.true;
+	
+	var instance = new RobotDirectives();
+	instance.meta("robots", "nofollow");
+	instance.meta("googlebot", "noindex");
+	instance.meta("robots", "follow");
+	expect( instance.is(["nofollow","index"]) ).to.be.true;
+});
+
+
+
+it(".header()", function()
+{
+	expect( new RobotDirectives().header("robots","").is("all") ).to.be.true;
+	
+	expect( new RobotDirectives().header("nofollow").is("nofollow" )    ).to.be.true;
+	expect( new RobotDirectives().header("noindex" ).is("noarchive")    ).to.be.true;
+	expect( new RobotDirectives().header("noindex" ).is("nocache"  )    ).to.be.true;
+	expect( new RobotDirectives().header("noindex" ).is("noindex"  )    ).to.be.true;
+	expect( new RobotDirectives().header("noindex" ).is(noindex    )    ).to.be.true;
+	expect( new RobotDirectives().header("noindex" ).isNot("index"    ) ).to.be.true;
+	expect( new RobotDirectives().header("noindex" ).isNot(noindex_inv) ).to.be.true;
+	
+	expect( new RobotDirectives().header("nofollow,noindex").is(none) ).to.be.true;
+	expect( new RobotDirectives().header("noindex,nofollow").is(none) ).to.be.true;
+	expect( new RobotDirectives().header("none"            ).is(none) ).to.be.true;
+	
+	expect( new RobotDirectives(             ).header("nofollow,follow,noindex"      ).is(none       ) ).to.be.true;
+	expect( new RobotDirectives(unrestrictive).header("nofollow,follow,noindex"      ).is(noindex    ) ).to.be.true;
+	expect( new RobotDirectives(             ).header("nofollow,noindex,index"       ).is(none       ) ).to.be.true;
+	expect( new RobotDirectives(unrestrictive).header("nofollow,noindex,index"       ).is(index      ) ).to.be.true;
+	expect( new RobotDirectives(             ).header("nofollow,follow,noindex,index").is(none       ) ).to.be.true;
+	expect( new RobotDirectives(unrestrictive).header("nofollow,follow,noindex,index").is(followIndex) ).to.be.true;
+	expect( new RobotDirectives(             ).header("none,index"                   ).is(none       ) ).to.be.true;
+	expect( new RobotDirectives(unrestrictive).header("none,index"                   ).is(index      ) ).to.be.true;
+	
+	expect( new RobotDirectives(             ).header("nofollow,noindex,all").is(none) ).to.be.true;
+	expect( new RobotDirectives(allIsWritable).header("nofollow,noindex,all").is(all ) ).to.be.true;
+	
+	expect( new RobotDirectives(         ).header("googlebot: nofollow,noindex").is(none) ).to.be.false;
+	expect( new RobotDirectives(googlebot).header("googlebot: nofollow,noindex").is(none) ).to.be.true;
+	expect( new RobotDirectives(googlebot).header(           "nofollow,noindex").is(none) ).to.be.true;
+	
+	expect( new RobotDirectives().header("unavailable_after: 1-Jan-2000 00:00:00 EST").is(noindex                          ) ).to.be.true;
+	expect( new RobotDirectives().header("unavailable_after: 1-Jan-3000 00:00:00 EST").is(noindex, {currentTime:futureTime}) ).to.be.true;
+	
+	expect( new RobotDirectives(         ).header("googlebot: unavailable_after: 1-Jan-2000 00:00:00 EST").is(noindex) ).to.be.false;
+	expect( new RobotDirectives(googlebot).header("googlebot: unavailable_after: 1-Jan-2000 00:00:00 EST").is(noindex) ).to.be.false;
+	
+	expect( new RobotDirectives().header("nofollow,noindex,none"     ).is(none) ).to.be.true;
+	expect( new RobotDirectives().header(" nofollow,  noindex ,none ").is(none) ).to.be.true;
+	
+	var instance = new RobotDirectives();
+	instance.header("nofollow");
+	instance.header("googlebot: noindex");
+	instance.header("follow");
+	expect( instance.is(["nofollow","index"]) ).to.be.true;
+});
+
+
+
+it("both", function()
+{
+	var instance = new RobotDirectives();
+	instance.header("nofollow");
+	instance.meta("googlebot", "follow,noindex");
+	instance.meta("robots", "unavailable_after:  1-Jan-3000 00:00:00 EST");
+	
+	expect( instance.is(["nofollow","noindex"], {userAgent:"googlebot/2.1"}) ).to.be.true;
+	
+	expect
+	(
+		instance.is(
+			none,
+			{
+				currentTime: futureTime,
+				userAgent: "googlebot/2.1"
+			}
+		)
+	).to.be.true;
 });

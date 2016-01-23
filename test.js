@@ -33,11 +33,11 @@ it(".meta()", function()
 {
 	expect( new RobotDirectives().meta("robots","").is("all") ).to.be.true;
 	
-	expect( new RobotDirectives().meta("robots","nofollow").is("nofollow" ) ).to.be.true;
-	expect( new RobotDirectives().meta("robots","noindex" ).is("noarchive") ).to.be.true;
-	expect( new RobotDirectives().meta("robots","noindex" ).is("nocache"  ) ).to.be.true;
-	expect( new RobotDirectives().meta("robots","noindex" ).is("noindex"  ) ).to.be.true;
-	expect( new RobotDirectives().meta("robots","noindex" ).is(noindex    ) ).to.be.true;
+	expect( new RobotDirectives().meta("robots","nofollow").is("nofollow" )    ).to.be.true;
+	expect( new RobotDirectives().meta("robots","noindex" ).is("noarchive")    ).to.be.true;
+	expect( new RobotDirectives().meta("robots","noindex" ).is("nocache"  )    ).to.be.true;
+	expect( new RobotDirectives().meta("robots","noindex" ).is("noindex"  )    ).to.be.true;
+	expect( new RobotDirectives().meta("robots","noindex" ).is(noindex    )    ).to.be.true;
 	expect( new RobotDirectives().meta("robots","noindex" ).isNot("index"    ) ).to.be.true;
 	expect( new RobotDirectives().meta("robots","noindex" ).isNot(noindex_inv) ).to.be.true;
 	
@@ -129,7 +129,7 @@ it(".header()", function()
 
 
 
-it("both", function()
+it(".meta() + .header()", function()
 {
 	var instance = new RobotDirectives();
 	instance.header("nofollow");
@@ -140,7 +140,8 @@ it("both", function()
 	
 	expect
 	(
-		instance.is(
+		instance.is
+		(
 			none,
 			{
 				currentTime: futureTime,
@@ -148,4 +149,33 @@ it("both", function()
 			}
 		)
 	).to.be.true;
+});
+
+
+
+it(".oneIs()", function()
+{
+	expect( new RobotDirectives().header("nofollow").oneIs(["follow","nofollow"]) ).to.be.true;
+	expect( new RobotDirectives().header("nofollow").oneIs(["nofollow","follow"]) ).to.be.true;
+	
+	expect( new RobotDirectives().header("nocache").oneIs(["cache","nofollow"]) ).to.be.false;
+});
+
+
+
+it(".oneIsNot()", function()
+{
+	expect( new RobotDirectives().header("nofollow").oneIsNot(["follow","nofollow"]) ).to.be.true;
+	expect( new RobotDirectives().header("nofollow").oneIsNot(["nofollow","follow"]) ).to.be.true;
+	
+	expect( new RobotDirectives().header("nocache").oneIsNot(["nocache","follow"]) ).to.be.false;
+});
+
+
+
+it(".isBot", function()
+{
+	expect( RobotDirectives.isBot("googlebot") ).to.be.true;
+	expect( RobotDirectives.isBot("  googleBot ") ).to.be.true;
+	expect( RobotDirectives.isBot("google bot") ).to.be.false;
 });

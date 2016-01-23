@@ -1,7 +1,7 @@
 {
   "name": "robot-directives",
   "description": "Parse robot directives within HTML meta and/or HTTP headers.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "homepage": "https://github.com/stevenvachon/robot-directives",
   "author": {
@@ -36,6 +36,7 @@
     "license"
   ],
   "keywords": [
+    "crawlers",
     "header",
     "html",
     "http",
@@ -45,6 +46,7 @@
     "noindex",
     "robots",
     "robots.txt",
-    "seo"
+    "seo",
+    "spiders"
   ]
 }

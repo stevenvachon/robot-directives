@@ -40,6 +40,9 @@ instance.is(RobotDirectives.NOINDEX, {
 	userAgent: "bingbot/2.0"
 });
 //=> true
+
+RobotDirectives.isBot("googlebot");
+//=> true
 ```
 
 
@@ -71,13 +74,25 @@ Directives for use in comparison (and avoiding typos).
 Parses, stores and cascades the value of an `X-Robots-Tag` HTTP header.
 
 ### `.is(directive[, options])`
-Validates a directive or a list of directives against already-parsed instructions. `directive` can be a `String` or an `Array`. `options`, if defined, will override any such defined in the constructor during instantiation.
+Validates a directive or a list of directives against parsed instructions. `directive` can be a `String` or an `Array`. `options`, if defined, will override any such defined in the constructor during instantiation. A value of `true` is returned if all directives are valid.
 
 ### `.isNot(directive[, options])`
-Inversion of `is()`.
+Inversion of `is()`. A value of `true` is returned if all directives are *not* valid.
 
 ### `.meta(name, content)`
 Parses, stores and cascades the data within a `<meta>` HTML element.
+
+### `.oneIs(directives[, options])`
+A variation of `.is()`. A value of `true` is returned if at least one directive is valid.
+
+### `.oneIsNot(directives[, options])`
+Inversion of `oneIs()`. A value of `true` is returned if at least one directive is *not* valid.
+
+
+## Functions
+
+### `isBot(botname)`
+Returns `true` if `botname` is a valid bot/crawler/spider.
 
 
 ## Options
@@ -100,7 +115,7 @@ Directive conflicts will be resolved by selecting the most restrictive value. Ex
 ### `options.userAgent`
 Type: `String`  
 Default value: `""`  
-The user-agent to use when retrieving instructions via `is()`.
+The HTTP user-agent to use when retrieving instructions via `is()` and `isNot()`.
 
 
 [npm-image]: https://img.shields.io/npm/v/robot-directives.svg

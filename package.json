@@ -1,7 +1,7 @@
 {
   "name": "robot-directives",
   "description": "Parse robot directives within HTML meta and/or HTTP headers.",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "license": "MIT",
   "homepage": "https://github.com/stevenvachon/robot-directives",
   "author": {
@@ -18,11 +18,11 @@
     "url": "https://github.com/stevenvachon/robot-directives/issues"
   },
   "dependencies": {
-    "isbot": "~0.0.3"
+    "isbot": "^1.0.1"
   },
   "devDependencies": {
-    "chai": "^3.4.1",
-    "mocha": "^2.3.4",
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5",
     "object.assign": "^4.0.3"
   },
   "engines": {

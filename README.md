@@ -37,7 +37,7 @@ instance.isNot([ RobotDirectives.ARCHIVE, RobotDirectives.FOLLOW ]);
 
 instance.is(RobotDirectives.NOINDEX, {
 	currentTime: function(){ return new Date("jan 1 3001").getTime() },
-	userAgent: "bingbot/2.0"
+	userAgent: "Bingbot/2.0"
 });
 //=> true
 
@@ -92,7 +92,7 @@ Inversion of `oneIs()`. A value of `true` is returned if at least one directive 
 ## Functions
 
 ### `isBot(botname)`
-Returns `true` if `botname` is a valid bot/crawler/spider.
+Returns `true` if `botname` is a valid bot/crawler/spider name or user-agent.
 
 
 ## Options

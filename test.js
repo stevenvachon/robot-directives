@@ -177,5 +177,5 @@ it(".isBot", function()
 {
 	expect( RobotDirectives.isBot("googlebot") ).to.be.true;
 	expect( RobotDirectives.isBot("  googleBot ") ).to.be.true;
-	expect( RobotDirectives.isBot("google bot") ).to.be.false;
+	expect( RobotDirectives.isBot("google bot") ).to.be.true;
 });

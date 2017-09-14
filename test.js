@@ -1,6 +1,6 @@
 "use strict";
+const {describe, it} = require("mocha");
 const {expect} = require("chai");
-const {it} = require("mocha");
 const removeNo = require("./lib/removeNo");
 const RobotDirectives = require("./lib");
 

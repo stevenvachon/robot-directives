@@ -11,7 +11,7 @@ Note: this library is not responsible for parsing any HTML.
 
 ## Installation
 
-[Node.js](http://nodejs.org/) `>= 6` is required. To install, type this at the command line:
+[Node.js](http://nodejs.org) `>= 8` is required. To install, type this at the command line:
 ```shell
 npm install robot-directives
 ```
@@ -118,7 +118,7 @@ The HTTP user-agent to use when retrieving instructions via `is()` and `isNot()`
 
 
 [npm-image]: https://img.shields.io/npm/v/robot-directives.svg
-[npm-url]: https://npmjs.org/package/robot-directives
+[npm-url]: https://npmjs.com/package/robot-directives
 [travis-image]: https://img.shields.io/travis/stevenvachon/robot-directives.svg
 [travis-url]: https://travis-ci.org/stevenvachon/robot-directives
 [coveralls-image]: https://img.shields.io/coveralls/stevenvachon/robot-directives.svg

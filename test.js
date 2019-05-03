@@ -47,7 +47,7 @@ const newInstance = ({bot, directives, method, options}) =>
 
 const tests = method =>
 {
-	it(`resolves to "all" by default`, function()
+	it(`resolves to "all" by default`, () =>
 	{
 		expect(newInstance({ method, options:  restrictive, directives:"" }).is("all")).to.be.true;
 		expect(newInstance({ method, options:unrestrictive, directives:"" }).is("all")).to.be.true;
@@ -56,9 +56,9 @@ const tests = method =>
 		expect(newInstance({ method, options:unrestrictive, directives:"" }).is("follow")).to.be.true;
 	});
 
-	["archive","cache"].forEach( function(directive)
+	["archive","cache"].forEach(directive =>
 	{
-		it(`supports "${directive}"`, function()
+		it(`supports "${directive}"`, () =>
 		{
 			const excluded = ["noarchive", "nocache"];
 			const included = ["archive", "cache"];
@@ -87,9 +87,9 @@ const tests = method =>
 		});
 	});
 
-	["follow","index"].forEach( function(directive)
+	["follow","index"].forEach(directive =>
 	{
-		it(`supports "${directive}"`, function()
+		it(`supports "${directive}"`, () =>
 		{
 			expect(newInstance({ method, options:  restrictive, directives:`${directive}` }).is(`${directive}`)).to.be.true;
 			expect(newInstance({ method, options:unrestrictive, directives:`${directive}` }).is(`${directive}`)).to.be.true;
@@ -118,9 +118,9 @@ const tests = method =>
 		});
 	});
 
-	["imageindex","odp","snippet","translate"].forEach( function(directive)
+	["imageindex","odp","snippet","translate"].forEach(directive =>
 	{
-		it(`supports "${directive}"`, function()
+		it(`supports "${directive}"`, () =>
 		{
 			expect(newInstance({ method, options:  restrictive, directives:`${directive}` }).is(`${directive}`)).to.be.true;
 			expect(newInstance({ method, options:unrestrictive, directives:`${directive}` }).is(`${directive}`)).to.be.true;
@@ -147,9 +147,9 @@ const tests = method =>
 		});
 	});
 
-	["noarchive","nocache"].forEach( function(directive)
+	["noarchive","nocache"].forEach(directive =>
 	{
-		it(`supports "${directive}"`, function()
+		it(`supports "${directive}"`, () =>
 		{
 			const excluded = ["noarchive", "nocache"];
 			const included = ["archive", "cache"];
@@ -168,7 +168,7 @@ const tests = method =>
 		});
 	});
 
-	it(`supports "nofollow"`, function()
+	it(`supports "nofollow"`, () =>
 	{
 		expect(newInstance({ method, options:  restrictive, directives:"nofollow" }).is("nofollow")).to.be.true;
 		expect(newInstance({ method, options:unrestrictive, directives:"nofollow" }).is("nofollow")).to.be.true;
@@ -184,7 +184,7 @@ const tests = method =>
 		expect(newInstance({ method, options:unrestrictive, directives:"none,nofollow" }).is(none)).to.be.true;
 	});
 
-	it(`supports "noindex"`, function()
+	it(`supports "noindex"`, () =>
 	{
 		expect(newInstance({ method, options:  restrictive, directives:"noindex" }).is(noindex)).to.be.true;
 		expect(newInstance({ method, options:unrestrictive, directives:"noindex" }).is(noindex)).to.be.true;
@@ -200,9 +200,9 @@ const tests = method =>
 		expect(newInstance({ method, options:unrestrictive, directives:"none,noindex" }).is(none)).to.be.true;
 	});
 
-	["noimageindex","noodp","nosnippet","notranslate"].forEach( function(directive)
+	["noimageindex","noodp","nosnippet","notranslate"].forEach(directive =>
 	{
-		it(`supports "${directive}"`, function()
+		it(`supports "${directive}"`, () =>
 		{
 			expect(newInstance({ method, options:  restrictive, directives:`${directive}` }).is(`${directive}`)).to.be.true;
 			expect(newInstance({ method, options:unrestrictive, directives:`${directive}` }).is(`${directive}`)).to.be.true;
@@ -219,13 +219,13 @@ const tests = method =>
 		});
 	});
 
-	it(`supports "none"`, function()
+	it(`supports "none"`, () =>
 	{
 		// Other cases for this directive are in other tests
 		expect( newInstance({ method, directives:"none" }).is(none) ).to.be.true;
 	});
 
-	it(`supports "all"`, function()
+	it(`supports "all"`, () =>
 	{
 		expect( newInstance({ method, options:  restrictive, directives:"all" }).is(all) ).to.be.true;
 		expect( newInstance({ method, options:allIsWritable, directives:"all" }).is(all) ).to.be.true;
@@ -233,13 +233,13 @@ const tests = method =>
 		expect( newInstance({ method, options:allIsWritable, directives:"nofollow,noindex,all" }).is(all ) ).to.be.true;
 	});
 
-	it(`supports "unavailable_after"`, function()
+	it(`supports "unavailable_after"`, () =>
 	{
 		expect( newInstance({ method, directives:"unavailable_after: 1-Jan-2000 00:00:00 EST" }).is(noindex                          ) ).to.be.true;
 		expect( newInstance({ method, directives:"unavailable_after: 1-Jan-3000 00:00:00 EST" }).is(noindex, {currentTime:futureTime}) ).to.be.true;
 	});
 
-	it("supports specific bot agents", function()
+	it("supports specific bot agents", () =>
 	{
 		expect( newInstance({ method,                    bot:"googlebot", directives:"nofollow,noindex" }).is(none) ).to.be.false;
 		expect( newInstance({ method, options:googlebot, bot:"googlebot", directives:"nofollow,noindex" }).is(none) ).to.be.true;
@@ -249,7 +249,7 @@ const tests = method =>
 		expect( newInstance({ method, directives:"googlebot: unavailable_after: 1-Jan-2000 00:00:00 EST" }).is(noindex) ).to.be.false;
 	});
 
-	it("supports edge cases", function()
+	it("supports edge cases", () =>
 	{
 		expect( newInstance({ method, directives:"nofollow,noindex" }).is(none) ).to.be.true;
 		expect( newInstance({ method, directives:"noindex,nofollow" }).is(none) ).to.be.true;
@@ -264,13 +264,13 @@ const tests = method =>
 		expect( newInstance({ method, options:unrestrictive, directives:"none,index"                    }).is(index      ) ).to.be.true;
 	});
 
-	it("supports whitespace between directives", function()
+	it("supports whitespace between directives", () =>
 	{
 		expect( newInstance({ method, directives:"nofollow,noindex,none"      }).is(none) ).to.be.true;
 		expect( newInstance({ method, directives:" nofollow,  noindex ,none " }).is(none) ).to.be.true;
 	});
 
-	it("does not support unknown directives", function()
+	it("does not support unknown directives", () =>
 	{
 		expect( newInstance({ method,                        directives:"unknown123" }).is("unknown123") ).to.be.false;
 		expect( newInstance({ method, options:unrestrictive, directives:"unknown123" }).is("unknown123") ).to.be.false;
@@ -279,25 +279,25 @@ const tests = method =>
 
 
 
-describe("is() / isNot()", function()
+describe("is() / isNot()", () =>
 {
-	it(`resolves to "all" by default`, function()
+	it(`resolves to "all" by default`, () =>
 	{
 		expect( new RobotDirectives().is("all") ).to.be.true;
 	});
 
-	it("does not support unknown directives", function()
+	it("does not support unknown directives", () =>
 	{
 		expect( new RobotDirectives().is("unknown123") ).to.be.false;
 	});
 
 
 
-	describe("with meta()", function()
+	describe("with meta()", () =>
 	{
 		tests("meta");
 
-		it("can be called multiple times", function()
+		it("can be called multiple times", () =>
 		{
 			const instance = new RobotDirectives();
 			instance.meta("robots", "nofollow");
@@ -309,11 +309,11 @@ describe("is() / isNot()", function()
 
 
 
-	describe("with header()", function()
+	describe("with header()", () =>
 	{
 		tests("header");
 
-		it("can be called multiple times", function()
+		it("can be called multiple times", () =>
 		{
 			const instance = new RobotDirectives();
 			instance.header("nofollow");
@@ -325,9 +325,9 @@ describe("is() / isNot()", function()
 
 
 
-	describe("with meta() + header()", function()
+	describe("with meta() + header()", () =>
 	{
-		it(`resolves to "all" by default`, function()
+		it(`resolves to "all" by default`, () =>
 		{
 			const instance = new RobotDirectives();
 			instance.header("");
@@ -336,7 +336,7 @@ describe("is() / isNot()", function()
 			expect( instance.is("all") ).to.be.true;
 		});
 
-		it("does not support unknown directives", function()
+		it("does not support unknown directives", () =>
 		{
 			const instance = new RobotDirectives();
 			instance.header("unknown123");
@@ -345,7 +345,7 @@ describe("is() / isNot()", function()
 			expect( instance.is("unknown123") ).to.be.false;
 		});
 
-		it("works", function()
+		it("works", () =>
 		{
 			const instance = new RobotDirectives();
 			instance.header("nofollow");
@@ -361,9 +361,9 @@ describe("is() / isNot()", function()
 
 
 
-describe("oneIs()", function()
+describe("oneIs()", () =>
 {
-	it("works", function()
+	it("works", () =>
 	{
 		expect( new RobotDirectives().header("nofollow").oneIs(["follow","nofollow"]) ).to.be.true;
 		expect( new RobotDirectives().header("nofollow").oneIs(["nofollow","follow"]) ).to.be.true;
@@ -374,9 +374,9 @@ describe("oneIs()", function()
 
 
 
-describe("oneIsNot()", function()
+describe("oneIsNot()", () =>
 {
-	it("works", function()
+	it("works", () =>
 	{
 		expect( new RobotDirectives().header("nofollow").oneIsNot(["follow","nofollow"]) ).to.be.true;
 		expect( new RobotDirectives().header("nofollow").oneIsNot(["nofollow","follow"]) ).to.be.true;
@@ -387,9 +387,9 @@ describe("oneIsNot()", function()
 
 
 
-describe("isBot()", function()
+describe("isBot()", () =>
 {
-	it("works", function()
+	it("works", () =>
 	{
 		expect( RobotDirectives.isBot("googlebot") ).to.be.true;
 		expect( RobotDirectives.isBot("  googleBot ") ).to.be.true;
@@ -399,9 +399,9 @@ describe("isBot()", function()
 
 
 
-describe("behavior", function()
+describe("behavior", () =>
 {
-	it("accepts redundant directives", function()
+	it("accepts redundant directives", () =>
 	{
 		const instance = new RobotDirectives();
 		instance.header("nocache");

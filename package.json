@@ -26,9 +26,9 @@
   },
   "scripts": {
     "ci": "npm run test && nyc report --reporter=text-lcov | coveralls",
-    "posttest": "nyc report --reporter=html",
+    "posttest": "nyc report --reporter=text-summary --reporter=html",
     "prepublishOnly": "npm test && babel lib/ --out-dir=lib-es5/ --presets=@babel/env --source-maps",
-    "test": "nyc --reporter=text-summary mocha test.js --check-leaks --bail"
+    "test": "nyc --silent mocha test.js --check-leaks --bail"
   },
   "files": [
     "lib",
